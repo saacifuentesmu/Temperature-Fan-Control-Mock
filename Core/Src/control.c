@@ -9,8 +9,6 @@
 
 #include "control.h"
 
-#define FAILSAFE_DUTY 35U
-
 static uint8_t clamp_u8(int32_t val, int32_t lo, int32_t hi)
 {
   if (val < lo) return (uint8_t)lo;

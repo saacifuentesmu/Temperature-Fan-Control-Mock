@@ -27,6 +27,8 @@ typedef struct
   float kp;
 } ControlInputs;
 
+#define FAILSAFE_DUTY 35U
+
 uint8_t Control_ComputeAutoDuty(const ControlInputs *inputs);
 
 #endif /* CONTROL_H */

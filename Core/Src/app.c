@@ -68,7 +68,11 @@ void App_Process(void)
     }
 
     /* Compute and apply fan duty */
-    if (current_mode == MODE_AUTO)
+    if (!sample.valid)
+    {
+      Fan_SetDuty(FAILSAFE_DUTY);
+    }
+    else if (current_mode == MODE_AUTO)
     {
       ControlInputs inputs = {
         .temperature_c     = sample.temperature_c,
