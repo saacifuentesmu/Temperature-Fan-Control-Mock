@@ -9,6 +9,7 @@
 
 #include "control.h"
 
+/** @brief Clamp an int32 to [lo, hi] and return as uint8. */
 static uint8_t clamp_u8(int32_t val, int32_t lo, int32_t hi)
 {
   if (val < lo) return (uint8_t)lo;
@@ -16,6 +17,7 @@ static uint8_t clamp_u8(int32_t val, int32_t lo, int32_t hi)
   return (uint8_t)val;
 }
 
+/** @brief Compute auto fan duty using P controller + AQI override. */
 uint8_t Control_ComputeAutoDuty(const ControlInputs *inputs)
 {
   if (!inputs->sensor_valid)

@@ -14,11 +14,13 @@ static const uint8_t manual_duty_steps[] = { 0U, 50U, 100U };
 #define MANUAL_DUTY_COUNT  (sizeof(manual_duty_steps) / sizeof(manual_duty_steps[0]))
 static uint8_t manual_duty_index = 0U;
 
+/** @brief Reset button state. */
 void Buttons_Init(void)
 {
   manual_duty_index = 0U;
 }
 
+/** @brief Toggle between Auto and Manual mode. */
 void Buttons_OnModeButtonPressed(void)
 {
   if (App_GetMode() == MODE_AUTO)
@@ -33,6 +35,7 @@ void Buttons_OnModeButtonPressed(void)
   }
 }
 
+/** @brief Cycle manual duty 0->50->100->0 (ignored in Auto). */
 void Buttons_OnDutyButtonPressed(void)
 {
   if (App_GetMode() != MODE_MANUAL)

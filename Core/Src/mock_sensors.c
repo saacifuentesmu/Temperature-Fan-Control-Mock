@@ -41,6 +41,7 @@ static const uint8_t  valid_profile[PROFILE_LEN] = {
   0, 0
 };
 
+/** @brief Reset sensor profile to step 0. */
 void MockSensors_Init(void)
 {
   g_step = 0U;
@@ -49,6 +50,7 @@ void MockSensors_Init(void)
   g_sample.valid             = valid_profile[0];
 }
 
+/** @brief Advance the deterministic sensor profile by one step. */
 void MockSensors_Step500ms(void)
 {
   g_step = (g_step + 1U) % PROFILE_LEN;
@@ -57,6 +59,7 @@ void MockSensors_Step500ms(void)
   g_sample.valid             = valid_profile[g_step];
 }
 
+/** @brief Return the most recent sensor sample. */
 MockSensorSample MockSensors_GetLatest(void)
 {
   return g_sample;

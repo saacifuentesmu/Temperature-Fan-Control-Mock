@@ -29,6 +29,7 @@ static uint8_t     manual_duty  = 0U;
 static uint32_t last_sensor_ms = 0U;
 static uint32_t last_uart_ms   = 0U;
 
+/** @brief Initialise all application modules and set default state. */
 void App_Init(void)
 {
   Buttons_Init();
@@ -42,6 +43,7 @@ void App_Init(void)
   LedStatus_SetPattern(LED_PATTERN_SOLID);
 }
 
+/** @brief Main loop tick - sensors, control, LED and UART scheduling. */
 void App_Process(void)
 {
   uint32_t now = HAL_GetTick();
@@ -106,32 +108,38 @@ void App_Process(void)
   }
 }
 
+/** @brief Return the current operating mode. */
 ControlMode App_GetMode(void)
 {
   return current_mode;
 }
 
+/** @brief Switch operating mode and update LED pattern. */
 void App_SetMode(ControlMode mode)
 {
   current_mode = mode;
   LedStatus_SetPattern((mode == MODE_AUTO) ? LED_PATTERN_SOLID : LED_PATTERN_SLOW_BLINK);
 }
 
+/** @brief Return the current manual duty percentage. */
 uint8_t App_GetManualDuty(void)
 {
   return manual_duty;
 }
 
+/** @brief Store a new manual duty percentage. */
 void App_SetManualDuty(uint8_t duty)
 {
   manual_duty = duty;
 }
 
+/** @brief Called from EXTI ISR when the mode button is pressed. */
 void App_OnButtonModePressed(void)
 {
   Buttons_OnModeButtonPressed();
 }
 
+/** @brief Called from EXTI ISR when the duty button is pressed. */
 void App_OnButtonDutyPressed(void)
 {
   Buttons_OnDutyButtonPressed();

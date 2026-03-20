@@ -16,6 +16,7 @@
 static LedPattern current_pattern = LED_PATTERN_SOLID;
 static uint32_t   last_toggle_ms  = 0U;
 
+/** @brief Initialise LED to solid-off state. */
 void LedStatus_Init(void)
 {
   current_pattern = LED_PATTERN_SOLID;
@@ -23,6 +24,7 @@ void LedStatus_Init(void)
   HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, GPIO_PIN_RESET);
 }
 
+/** @brief Change the active LED pattern (no-op if unchanged). */
 void LedStatus_SetPattern(LedPattern pattern)
 {
   if (pattern == current_pattern)
@@ -35,6 +37,7 @@ void LedStatus_SetPattern(LedPattern pattern)
     HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, GPIO_PIN_SET);
 }
 
+/** @brief Drive LED toggling; call from main loop with HAL_GetTick(). */
 void LedStatus_Tick(uint32_t now_ms)
 {
   uint32_t period;
