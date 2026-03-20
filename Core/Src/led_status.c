@@ -20,7 +20,7 @@ void LedStatus_Init(void)
 {
   current_pattern = LED_PATTERN_SOLID;
   last_toggle_ms  = 0U;
-  HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, GPIO_PIN_RESET);
 }
 
 void LedStatus_SetPattern(LedPattern pattern)

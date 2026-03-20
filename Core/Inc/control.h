@@ -12,6 +12,12 @@
 
 #include <stdint.h>
 
+typedef enum
+{
+  MODE_AUTO,
+  MODE_MANUAL
+} ControlMode;
+
 typedef struct
 {
   float temperature_c;
