@@ -12,12 +12,22 @@
 
 #include "buttons.h"
 #include "control.h"
+#include "fan.h"
 #include "led_status.h"
 #include "mock_sensors.h"
 #include "uart_log.h"
 
+#define SENSOR_PERIOD_MS  500U
+#define UART_PERIOD_MS    1000U
+
+#define SETPOINT_C  28.0f
+#define KP          10.0f
+
 static ControlMode current_mode = MODE_AUTO;
 static uint8_t     manual_duty  = 0U;
+
+static uint32_t last_sensor_ms = 0U;
+static uint32_t last_uart_ms   = 0U;
 
 void App_Init(void)
 {
@@ -25,6 +35,7 @@ void App_Init(void)
   MockSensors_Init();
   UartLog_Init();
   LedStatus_Init();
+  Fan_Init();
 
   current_mode = MODE_AUTO;
   manual_duty  = 0U;
@@ -33,9 +44,62 @@ void App_Init(void)
 
 void App_Process(void)
 {
-  LedStatus_Tick(HAL_GetTick());
+  uint32_t now = HAL_GetTick();
 
-  /* TODO(candidates): implement periodic sensor update, control loop, and UART status logic. */
+  LedStatus_Tick(now);
+
+  /* --- 500 ms: update mock sensors --- */
+  if (now - last_sensor_ms >= SENSOR_PERIOD_MS)
+  {
+    last_sensor_ms = now;
+    MockSensors_Step500ms();
+
+    MockSensorSample sample = MockSensors_GetLatest();
+
+    /* Update LED for sensor error (overrides mode pattern) */
+    if (!sample.valid)
+    {
+      LedStatus_SetPattern(LED_PATTERN_FAST_BLINK);
+    }
+    else
+    {
+      LedStatus_SetPattern((current_mode == MODE_AUTO)
+        ? LED_PATTERN_SOLID : LED_PATTERN_SLOW_BLINK);
+    }
+
+    /* Compute and apply fan duty */
+    if (current_mode == MODE_AUTO)
+    {
+      ControlInputs inputs = {
+        .temperature_c     = sample.temperature_c,
+        .air_quality_index = sample.air_quality_index,
+        .sensor_valid      = sample.valid,
+        .setpoint_c        = SETPOINT_C,
+        .kp                = KP
+      };
+      Fan_SetDuty(Control_ComputeAutoDuty(&inputs));
+    }
+    else
+    {
+      Fan_SetDuty(manual_duty);
+    }
+  }
+
+  /* --- 1000 ms: UART status report --- */
+  if (now - last_uart_ms >= UART_PERIOD_MS)
+  {
+    last_uart_ms = now;
+
+    MockSensorSample sample = MockSensors_GetLatest();
+    UartLogStatus log = {
+      .mode_auto         = (current_mode == MODE_AUTO) ? 1U : 0U,
+      .temperature_c     = sample.temperature_c,
+      .air_quality_index = sample.air_quality_index,
+      .fan_duty_percent  = Fan_GetDuty(),
+      .sensor_valid      = sample.valid
+    };
+    UartLog_PrintStatus(&log);
+  }
 }
 
 ControlMode App_GetMode(void)
