@@ -11,6 +11,7 @@
 
 #include "buttons.h"
 #include "control.h"
+#include "led_status.h"
 #include "mock_sensors.h"
 #include "uart_log.h"
 
@@ -19,10 +20,12 @@ void App_Init(void)
   Buttons_Init();
   MockSensors_Init();
   UartLog_Init();
+  LedStatus_Init();
 }
 
 void App_Process(void)
 {
+  LedStatus_Tick(HAL_GetTick());
 
   /* TODO(candidates): implement periodic sensor update, control loop, and UART status logic. */
 }
